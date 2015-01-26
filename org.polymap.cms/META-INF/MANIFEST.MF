@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CMS
+Bundle-SymbolicName: org.polymap.cms;singleton:=true
+Bundle-Version: 1.1.0.qualifier
+Bundle-Vendor: polymap.org
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.polymap.rap.updownload;bundle-version="1.0.0",
+ org.polymap.rhei.batik;bundle-version="4.0.0",
+ org.polymap.service.fs;bundle-version="4.0.0"
+Bundle-Activator: org.polymap.cms.CmsPlugin
+Export-Package: org.polymap.cms,
+ org.polymap.cms.webdav
