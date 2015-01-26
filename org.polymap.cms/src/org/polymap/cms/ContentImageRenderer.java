@@ -21,8 +21,6 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.polymap.core.ui.download.DownloadServiceHandler;
-
 import org.polymap.rhei.batik.IAppContext;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownNode;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownNodeType;
@@ -30,6 +28,7 @@ import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownRenderer;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit.RenderOutput;
 
 import org.polymap.cms.ContentProvider.ContentObject;
+import org.polymap.rap.updownload.download.DownloadServiceHandler;
 
 /**
  * Images and download.
