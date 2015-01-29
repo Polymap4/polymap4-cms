@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+  Parameter:
+  ---------------------------------
+  @filename - ...
+  @filecontent - ... 
+  -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>@filename</title>
+
+<style type="text/css">
+td, th { padding: 8px; }
+</style>
+</head>
+
+<body style="background:#f0f0f0; width:800px; margin-left:auto; margin-right:auto;">
+    <h1>@filename</h1>
+    
+    <em>Viel Spass beim Bearbeiten dieser Seite. :) Und, ganz wichtig: Fehler passieren,
+    es ist nur Software und alles wird gut!</em>
+    
+    <form action="." enctype="multipart/form-data" method="post" accept-charset="ISO-8859-1">
+        <p>
+            <!-- Welche HTML-Elemente fallen Ihnen ein, und was bewirken sie:<br-->
+            <textarea name="edited" cols="90" rows="25">@filecontent</textarea>
+            <input name="filename" type="hidden" value="@filename">
+        </p>
+        <input type="submit" value="Speichern">
+        - <small>(Zum Abbrechen im Browser <i>"eine Seite zurück"</i> benutzen)</small>
+    </form>
+    
+    <h2>Hilfe zur Formatierung</h2>
+    <p>
+    Im Text kann sogenanntes <b>Markdown</b> verwendet werden. Das ist ein sehr einfache Art, um
+    Formatierung (fett, kursiv, Überschriften, etc.) im Text zu markieren. Die
+    komplette <a href="http://markdown.de/">Anleitung zu Markdown</a> enthält die Dokumentation
+    zu allen Elementen. Nachfolgend findet sich eine kurze Übersicht.
+    </p>
+    
+    <br/>
+    <table border="1" width="90%" rules="all">
+        <colgroup>
+            <col width="1*">
+            <col width="2*">
+        </colgroup>
+        <thead>
+            <tr style="background:#e0e0e0;">
+                <th>So wird es geschrieben...</th>
+                <th>...und so sieht es dann aus</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>**fett** (oder __fett__)</td>
+                <td><b>fett</b></td>
+            </tr>
+            
+            <tr>
+                <td>*kursiv* (oder _kursiv_)</td>
+                <td><em>kursiv</em></td>
+            </tr>
+            
+            <tr>
+                <td># Große Überschrift<br/><br/>
+                    ## Diese ist etwas kleiner<br/><br/>
+                    ### Und die ist noch kleiner<br/><br/>
+                    <b>alternativ geht auch folgende Schreibweise:</b><br/><br/>
+                    Das ist eine große Überschrift<br/>
+                    ========================
+                 </td>
+                <td><h1>Große Überschrift</h1><h2>Diese ist etwas kleiner</h2><h3>Und die ist noch kleiner</h3></td>
+            </tr>
+            
+            <tr>
+                <td><b>Ein Link zu einer normalen Seite:</b><br/><br/>
+                [Anzeigetext](!Impressum.txt)<br/><br/>
+                <b>Ein Download-Link:</b><br/><br/>
+                [Dokument](#media/dokument.pdf)<br/><br/>
+                <b>Ein Link zu einer externen Seite, wie Google</b><br/><br/>
+                [Ein Link zu Google](http://google.de)<br/><br/>
+                <b>In eckigen Klammern wird der sichtbare Text des Links geschrieben. Danach folgt in runden Klammern der Name der Datei, auf die verwiesen wird. Angeführt von einem "!", wenn es ein Artikel ist und "#" bei einem Download.</b></td>
+                
+                <td><a href="Impressum.txt">Anzeigetext</a><br/><br/><a href="http://google.de">Ein Link zu Google</a></td>
+            </tr>
+            
+            <tr>
+                <td>* Ulli<br/>* Christiane<br/>* Kerstin<br/><br/><em>Alternativ kann auf ein "-" oder "+" als Anstrich verwendet werden.</em></td>
+                <td><ul><li>Ulli</li><li>Christiane</li><li>Kerstin</li></ul></td>
+            </tr>
+
+            <tr>
+                <td>1. Ulli<br/>2. Christiane<br/>3. Kerstin<br/></td>
+                <td><ol><li>Ulli</li><li>Christiane</li><li>Kerstin</li></ol></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
