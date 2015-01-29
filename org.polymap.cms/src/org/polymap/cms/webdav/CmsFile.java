@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.eclipse.core.runtime.IPath;
 
-import org.polymap.service.fs.providers.FsFile;
+import org.polymap.service.fs.providers.file.FsFile;
 import org.polymap.service.fs.spi.BadRequestException;
 import org.polymap.service.fs.spi.Range;
 

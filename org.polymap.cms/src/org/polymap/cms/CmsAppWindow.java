@@ -40,8 +40,8 @@ public abstract class CmsAppWindow
         contents.setLayout( FormLayoutFactory.defaults().margins( 0, margins/2, 10, margins/2 ).create() );
 
         super.createContents( parent );
-        panels.setData( RWT.CUSTOM_VARIANT, "cms_panels"  );
-        contents.setData( RWT.CUSTOM_VARIANT, "cms_panels_outer" );
+        panels.setData( RWT.CUSTOM_VARIANT, "cms-panels"  );
+        contents.setData( RWT.CUSTOM_VARIANT, "cms-panels-outer" );
         
         return contents;
     }

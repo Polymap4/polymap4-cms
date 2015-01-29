@@ -27,7 +27,7 @@ import com.bradmcevoy.http.FileItem;
 
 import org.eclipse.core.runtime.IPath;
 
-import org.polymap.service.fs.providers.FsFolder;
+import org.polymap.service.fs.providers.file.FsFolder;
 import org.polymap.service.fs.spi.BadRequestException;
 import org.polymap.service.fs.spi.NotAuthorizedException;
 

@@ -14,20 +14,24 @@
  */
 package org.polymap.cms;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import org.eclipse.swt.widgets.Display;
 
-import org.polymap.core.runtime.Polymap;
+import org.eclipse.rap.rwt.internal.lifecycle.LifeCycleUtil;
 
 import org.polymap.rhei.batik.IAppContext;
 import org.polymap.rhei.batik.internal.LinkActionServiceHandler;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.LinkAction;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownNode;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownNodeType;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownRenderer;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.RenderOutput;
+import org.polymap.rhei.batik.toolkit.ILinkAction;
+import org.polymap.rhei.batik.toolkit.IMarkdownNode;
+import org.polymap.rhei.batik.toolkit.IMarkdownRenderer;
+import org.polymap.rhei.batik.toolkit.MarkdownRenderOutput;
 
 /**
  * Render !article style links.
@@ -39,37 +43,50 @@ import org.polymap.rhei.batik.toolkit.IPanelToolkit.RenderOutput;
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
 public class ArticleLinkRenderer
-        implements MarkdownRenderer {
+        implements IMarkdownRenderer {
 
     private static Log log = LogFactory.getLog( ArticleLinkRenderer.class );
 
+    /* 
+     * FIXME Horrible hack: keep strong references to prevent providers from GCed
+     * see also ContentImageProvider 
+     */
+    private static Cache<String,ILinkAction> actions = CacheBuilder.newBuilder().maximumSize( 100 ).build();
+
     
     @Override
-    public boolean render( final MarkdownNode node, RenderOutput out, final IAppContext context ) {
+    public boolean render( final IMarkdownNode node, MarkdownRenderOutput out, final IAppContext context ) {
         log.info( "url=" + node.url() );
-        if (node.type() == MarkdownNodeType.ExpLink 
+        if (node.type() == IMarkdownNode.Type.ExpLink 
                 && node.url().startsWith( "!" )) {
             
-            String id = LinkActionServiceHandler.register( new LinkAction() {
-                Display display = Polymap.getSessionDisplay();
-                
-                @Override
-                public void linkPressed() throws Exception {
-                    display.asyncExec( new Runnable() {
-                        public void run() {
-                            ArticlePanel panel = (ArticlePanel)context.openPanel( ArticlePanel.ID );
-                            panel.setArticle( node.url().substring( 1 ) ); 
-                        }
-                    });
-                }
-            });
-            
-            String linkUrl = "javascript:sendServiceHandlerRequest('" + LinkActionServiceHandler.SERVICE_HANDLER_ID + "','" + id + "');"
-                    /*+ "org.eclipse.swt.Request.getInstance().enableUICallBack();"*/;
-            out.setUrl( linkUrl );
-            out.setText( node.text() );
-            out.setTitle( node.title() );
-            return true;
+            try {
+                ILinkAction action = actions.get( "", () -> new ILinkAction() {
+                    Display display = LifeCycleUtil.getSessionDisplay();
+                    
+                    @Override
+                    public Display display() {
+                        return display;
+                    }
+                    
+                    @Override
+                    public void linkPressed() throws Exception {
+                        ArticlePanel panel = (ArticlePanel)context.openPanel( ArticlePanel.ID );
+                        panel.setArticle( node.url().substring( 1 ) ); 
+                    }
+                });
+
+                String id = LinkActionServiceHandler.register( action );
+                String linkUrl = "javascript:sendServiceHandlerRequest('" + LinkActionServiceHandler.SERVICE_HANDLER_ID + "','" + id + "');"
+                        /*+ "org.eclipse.swt.Request.getInstance().enableUICallBack();"*/;
+                out.setUrl( linkUrl );
+                out.setText( node.text() );
+                out.setTitle( node.title() );
+                return true;
+            }
+            catch (ExecutionException e) {
+                throw new RuntimeException( e );
+            }
         }
         else {
             return false;

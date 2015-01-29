@@ -16,16 +16,19 @@ package org.polymap.cms;
 
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 
+import java.util.concurrent.ExecutionException;
+
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.polymap.rhei.batik.IAppContext;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownNode;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownNodeType;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.MarkdownRenderer;
-import org.polymap.rhei.batik.toolkit.IPanelToolkit.RenderOutput;
+import org.polymap.rhei.batik.toolkit.IMarkdownNode;
+import org.polymap.rhei.batik.toolkit.IMarkdownRenderer;
+import org.polymap.rhei.batik.toolkit.MarkdownRenderOutput;
 
 import org.polymap.cms.ContentProvider.ContentObject;
 import org.polymap.rap.updownload.download.DownloadServiceHandler;
@@ -36,15 +39,19 @@ import org.polymap.rap.updownload.download.DownloadServiceHandler;
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
 public class ContentImageRenderer
-        implements MarkdownRenderer {
+        implements IMarkdownRenderer {
 
     private static Log log = LogFactory.getLog( ContentImageRenderer.class );
+    
+    /* FIXME Horrible hack: keep strong references to prevent providers from GCed */
+    private static Cache<String,DownloadServiceHandler.ContentProvider> providers = 
+            CacheBuilder.newBuilder().maximumSize( 100 ).build();
 
-
+    
     @Override
-    public boolean render( MarkdownNode node, RenderOutput out, IAppContext context ) {
-        if (node.type() == MarkdownNodeType.ExpImage
-                || node.type() == MarkdownNodeType.ExpLink && node.url().startsWith( "#" )) {
+    public boolean render( IMarkdownNode node, MarkdownRenderOutput out, IAppContext context ) {
+        if (node.type() == IMarkdownNode.Type.ExpImage
+                || node.type() == IMarkdownNode.Type.ExpLink && node.url().startsWith( "#" )) {
             log.info( "url=" + node.url() + ", text=" + node.text() );
 
             String nodeUrl = node.url().startsWith( "#" ) 
@@ -57,26 +64,33 @@ public class ContentImageRenderer
                 return false;
             }
 
-            String url = DownloadServiceHandler.registerContent( new DownloadServiceHandler.ContentProvider() {
-                @Override
-                public InputStream getInputStream() throws Exception {
-                    return co.contentStream();
-                }
-                @Override
-                public String getFilename() {
-                    return co.title();
-                }
-                @Override
-                public String getContentType() {
-                    return co.contentType();
-                }
-                @Override
-                public boolean done( boolean success ) {
-                    return true;
-                }
-            });
-            out.setUrl( url );
-            out.setText( node.text() );
+            try {
+                // download handler
+                DownloadServiceHandler.ContentProvider provider = providers.get( nodeUrl, () -> new DownloadServiceHandler.ContentProvider() {
+                    @Override
+                    public InputStream getInputStream() throws Exception {
+                        return co.contentStream();
+                    }
+                    @Override
+                    public String getFilename() {
+                        return co.title();
+                    }
+                    @Override
+                    public String getContentType() {
+                        return co.contentType();
+                    }
+                    @Override
+                    public boolean done( boolean success ) {
+                        return false;
+                    }
+                });
+                String url = DownloadServiceHandler.registerContent( provider );
+                out.setUrl( url );
+                out.setText( node.text() );
+            }
+            catch (ExecutionException e) {
+                throw new RuntimeException( e );
+            }
             return true;
         }
         return false;

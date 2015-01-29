@@ -29,8 +29,8 @@ import org.eclipse.core.runtime.Path;
 import org.polymap.core.runtime.Polymap;
 import org.polymap.core.security.SecurityUtils;
 
-import org.polymap.service.fs.providers.FsContentProvider;
-import org.polymap.service.fs.providers.FsFolder;
+import org.polymap.service.fs.providers.file.FsContentProvider;
+import org.polymap.service.fs.providers.file.FsFolder;
 import org.polymap.service.fs.spi.IContentFolder;
 import org.polymap.service.fs.spi.IContentNode;
 import org.polymap.service.fs.spi.IContentProvider;
@@ -56,7 +56,7 @@ public class CmsContentProvider
     public void init( IContentSite site ) {
         super.init( site );
         
-        File dir = new File( Polymap.getWorkspacePath().toFile(), "org.polymap.cms" );
+        File dir = new File( Polymap.getWorkspacePath().toFile(), "cms" );
         FsFolder root = new CmsFolder( "CMS", new Path( "/" ), this, dir );
         roots = Collections.singletonList( root );
     }

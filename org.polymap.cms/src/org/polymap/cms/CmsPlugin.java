@@ -35,8 +35,8 @@ public class CmsPlugin extends AbstractUIPlugin {
         
         ContentProvider.init( Polymap.getWorkspacePath().append( "cms" ) );
         
-        DesktopToolkit.registerMarkdownRenderer( new ContentImageRenderer() );
-        DesktopToolkit.registerMarkdownRenderer( new ArticleLinkRenderer() );
+        DesktopToolkit.registerMarkdownRenderer( () -> new ContentImageRenderer() );
+        DesktopToolkit.registerMarkdownRenderer( () -> new ArticleLinkRenderer() );
     }
 
     
