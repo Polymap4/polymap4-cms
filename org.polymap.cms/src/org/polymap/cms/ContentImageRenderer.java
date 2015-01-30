@@ -16,15 +16,15 @@ package org.polymap.cms;
 
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 
-import java.util.concurrent.ExecutionException;
-
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.widgets.Widget;
+
 import org.polymap.rhei.batik.IAppContext;
 import org.polymap.rhei.batik.toolkit.IMarkdownNode;
 import org.polymap.rhei.batik.toolkit.IMarkdownRenderer;
@@ -39,17 +39,15 @@ import org.polymap.rap.updownload.download.DownloadServiceHandler;
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
 public class ContentImageRenderer
-        implements IMarkdownRenderer {
+        implements IMarkdownRenderer, DisposeListener {
 
     private static Log log = LogFactory.getLog( ContentImageRenderer.class );
     
-    /* FIXME Horrible hack: keep strong references to prevent providers from GCed */
-    private static Cache<String,DownloadServiceHandler.ContentProvider> providers = 
-            CacheBuilder.newBuilder().maximumSize( 100 ).build();
-
+    private DownloadServiceHandler.ContentProvider provider;
+    
     
     @Override
-    public boolean render( IMarkdownNode node, MarkdownRenderOutput out, IAppContext context ) {
+    public boolean render( IMarkdownNode node, MarkdownRenderOutput out, IAppContext context, Widget widget ) {
         if (node.type() == IMarkdownNode.Type.ExpImage
                 || node.type() == IMarkdownNode.Type.ExpLink && node.url().startsWith( "#" )) {
             log.info( "url=" + node.url() + ", text=" + node.text() );
@@ -64,36 +62,41 @@ public class ContentImageRenderer
                 return false;
             }
 
-            try {
-                // download handler
-                DownloadServiceHandler.ContentProvider provider = providers.get( nodeUrl, () -> new DownloadServiceHandler.ContentProvider() {
-                    @Override
-                    public InputStream getInputStream() throws Exception {
-                        return co.contentStream();
-                    }
-                    @Override
-                    public String getFilename() {
-                        return co.title();
-                    }
-                    @Override
-                    public String getContentType() {
-                        return co.contentType();
-                    }
-                    @Override
-                    public boolean done( boolean success ) {
-                        return false;
-                    }
-                });
-                String url = DownloadServiceHandler.registerContent( provider );
-                out.setUrl( url );
-                out.setText( node.text() );
-            }
-            catch (ExecutionException e) {
-                throw new RuntimeException( e );
-            }
+            // download handler
+            assert provider == null; 
+            provider = new DownloadServiceHandler.ContentProvider() {
+                @Override
+                public InputStream getInputStream() throws Exception {
+                    return co.contentStream();
+                }
+                @Override
+                public String getFilename() {
+                    return co.title();
+                }
+                @Override
+                public String getContentType() {
+                    return co.contentType();
+                }
+                @Override
+                public boolean done( boolean success ) {
+                    return false;
+                }
+            };
+            
+            // prevent this from being GCed as long as the widget exists
+            widget.addDisposeListener( this );
+
+            String url = DownloadServiceHandler.registerContent( provider );
+            out.setUrl( url );
+            out.setText( node.text() );
             return true;
         }
         return false;
     }
     
+    @Override
+    public void widgetDisposed( DisposeEvent ev ) {
+        //DownloadServiceHandler.unregisterContent( provider );
+    }    
+
 }
