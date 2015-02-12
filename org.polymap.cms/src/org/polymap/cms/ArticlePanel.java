@@ -21,11 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.ui.UIUtils;
+
 import org.polymap.rhei.batik.DefaultPanel;
 import org.polymap.rhei.batik.IAppContext;
 import org.polymap.rhei.batik.IPanelSite;
 import org.polymap.rhei.batik.PanelIdentifier;
-import org.polymap.rhei.batik.app.BatikApplication;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
 import org.polymap.rhei.batik.toolkit.PriorityConstraint;
@@ -68,7 +69,7 @@ public class ArticlePanel
     @Override
     public void createContents( final Composite parent ) {
         // delay after ArticleLinkRenderer has called setArticle
-        BatikApplication.sessionDisplay().asyncExec( new Runnable() {
+        UIUtils.sessionDisplay().asyncExec( new Runnable() {
             public void run() {
                 IPanelToolkit tk = getSite().toolkit();
                 ContentProvider cp = ContentProvider.instance();

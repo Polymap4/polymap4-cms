@@ -7,7 +7,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import org.polymap.core.runtime.Polymap;
 
-import org.polymap.rhei.batik.layout.desktop.DesktopToolkit;
+import org.polymap.rhei.batik.app.DefaultToolkit;
 
 import org.osgi.framework.BundleContext;
 
@@ -35,8 +35,8 @@ public class CmsPlugin extends AbstractUIPlugin {
         
         ContentProvider.init( Polymap.getWorkspacePath().append( "cms" ) );
         
-        DesktopToolkit.registerMarkdownRenderer( () -> new ContentImageRenderer() );
-        DesktopToolkit.registerMarkdownRenderer( () -> new ArticleLinkRenderer() );
+        DefaultToolkit.registerMarkdownRenderer( () -> new ContentImageRenderer() );
+        DefaultToolkit.registerMarkdownRenderer( () -> new ArticleLinkRenderer() );
     }
 
     
