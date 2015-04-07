@@ -24,11 +24,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.polymap.core.ui.UIUtils;
 
 import org.polymap.rhei.batik.DefaultPanel;
-import org.polymap.rhei.batik.IAppContext;
-import org.polymap.rhei.batik.IPanelSite;
 import org.polymap.rhei.batik.PanelIdentifier;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
+import org.polymap.rhei.batik.toolkit.MinWidthConstraint;
 import org.polymap.rhei.batik.toolkit.PriorityConstraint;
 
 import org.polymap.cms.ContentProvider.ContentObject;
@@ -48,19 +47,6 @@ public class ArticlePanel
     private String          articlePath;
     
     
-    @Override
-    public boolean init( IPanelSite site, IAppContext context ) {
-        super.init( site, context );
-        return false;
-    }
-
-
-    @Override
-    public PanelIdentifier id() {
-        return ID;
-    }
-
-
     public void setArticle( String path ) {
         this.articlePath = path;
     }
@@ -85,7 +71,7 @@ public class ArticlePanel
                 }
                 
                 IPanelSection section = tk.createPanelSection( parent, title );
-                section.addConstraint( new PriorityConstraint( 10 ) );
+                section.addConstraint( new PriorityConstraint( 10 ), new MinWidthConstraint( 350, 0 ) );
                 section.getBody().setLayout( new FillLayout() );
                 tk.createFlowText( section.getBody(), content );
                 

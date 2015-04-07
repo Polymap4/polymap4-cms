@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import org.polymap.core.ui.FormLayoutFactory;
 
-import org.polymap.rhei.batik.app.DefaultAppDesign;
 import org.polymap.rhei.batik.app.IAppDesign;
+import org.polymap.rhei.batik.engine.DefaultAppDesign;
 
 /**
  * 

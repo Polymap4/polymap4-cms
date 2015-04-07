@@ -20,9 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.batik.DefaultPanel;
-import org.polymap.rhei.batik.IAppContext;
 import org.polymap.rhei.batik.IPanel;
-import org.polymap.rhei.batik.IPanelSite;
 import org.polymap.rhei.batik.PanelIdentifier;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
@@ -42,15 +40,8 @@ public class StartPanel
     
 
     @Override
-    public boolean init( IPanelSite site, IAppContext context ) {
-        super.init( site, context );
-        return site.getPath().size() == 1;
-    }
-
-
-    @Override
-    public PanelIdentifier id() {
-        return ID;
+    public boolean wantsToBeShown() {
+        return getSite().getPath().size() == 1;
     }
 
 

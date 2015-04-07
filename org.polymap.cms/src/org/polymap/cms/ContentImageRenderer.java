@@ -25,7 +25,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Widget;
 
-import org.polymap.rhei.batik.IAppContext;
+import org.polymap.rhei.batik.app.DefaultToolkit;
 import org.polymap.rhei.batik.toolkit.IMarkdownNode;
 import org.polymap.rhei.batik.toolkit.IMarkdownRenderer;
 import org.polymap.rhei.batik.toolkit.MarkdownRenderOutput;
@@ -47,7 +47,7 @@ public class ContentImageRenderer
     
     
     @Override
-    public boolean render( IMarkdownNode node, MarkdownRenderOutput out, IAppContext context, Widget widget ) {
+    public boolean render( DefaultToolkit toolkit, IMarkdownNode node, MarkdownRenderOutput out, Widget widget ) {
         if (node.type() == IMarkdownNode.Type.ExpImage
                 || node.type() == IMarkdownNode.Type.ExpLink && node.url().startsWith( "#" )) {
             log.info( "url=" + node.url() + ", text=" + node.text() );

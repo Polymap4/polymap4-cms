@@ -24,7 +24,9 @@ import org.eclipse.swt.widgets.Widget;
 
 import org.polymap.core.ui.UIUtils;
 
+import org.polymap.rhei.batik.BatikApplication;
 import org.polymap.rhei.batik.IAppContext;
+import org.polymap.rhei.batik.app.DefaultToolkit;
 import org.polymap.rhei.batik.internal.LinkActionServiceHandler;
 import org.polymap.rhei.batik.toolkit.ILinkAction;
 import org.polymap.rhei.batik.toolkit.IMarkdownNode;
@@ -49,7 +51,7 @@ public class ArticleLinkRenderer
 
     
     @Override
-    public boolean render( final IMarkdownNode node, MarkdownRenderOutput out, final IAppContext context, Widget widget ) {
+    public boolean render( DefaultToolkit toolkit, IMarkdownNode node, MarkdownRenderOutput out, Widget widget ) {
         log.info( "url=" + node.url() );
         if (node.type() == IMarkdownNode.Type.ExpLink && node.url().startsWith( "!" )) {
 
@@ -64,7 +66,8 @@ public class ArticleLinkRenderer
 
                 @Override
                 public void linkPressed() throws Exception {
-                    ArticlePanel panel = (ArticlePanel)context.openPanel( ArticlePanel.ID );
+                    IAppContext context = BatikApplication.instance().getContext();
+                    ArticlePanel panel = (ArticlePanel)context.openPanel( toolkit.getPanelPath(), ArticlePanel.ID );
                     panel.setArticle( node.url().substring( 1 ) ); 
                 }
             };
