@@ -28,7 +28,7 @@ public class CmsAppDesign
     
     
     @Override
-    public Shell createMainWindow( Display display ) {
+    public Shell createMainWindow( @SuppressWarnings("hiding") Display display ) {
         super.createMainWindow( display );
         
         Rectangle bounds = display.getBounds();

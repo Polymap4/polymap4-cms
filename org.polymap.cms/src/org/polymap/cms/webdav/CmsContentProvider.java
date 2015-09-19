@@ -65,7 +65,7 @@ public class CmsContentProvider
     @Override
     public List<? extends IContentNode> getChildren( IPath path ) {
         // check admin
-        if (!SecurityUtils.isAdmin( Polymap.instance().getPrincipals())) {
+        if (!SecurityUtils.isAdmin()) {
             return null;
         }
         

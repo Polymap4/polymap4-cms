@@ -3,20 +3,25 @@
  */
 package org.polymap.cms;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-
-import org.polymap.core.runtime.Polymap;
-
-import org.polymap.rhei.batik.app.DefaultToolkit;
+import java.io.File;
 
 import org.osgi.framework.BundleContext;
+
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import org.eclipse.core.runtime.Path;
+
+import org.polymap.core.CorePlugin;
+
+import org.polymap.rhei.batik.toolkit.DefaultToolkit;
 
 /**
  * 
  *
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
-public class CmsPlugin extends AbstractUIPlugin {
+public class CmsPlugin 
+        extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.polymap.cms"; //$NON-NLS-1$
 
@@ -33,7 +38,7 @@ public class CmsPlugin extends AbstractUIPlugin {
         super.start( context );
         instance = this;
         
-        ContentProvider.init( Polymap.getWorkspacePath().append( "cms" ) );
+        ContentProvider.init( new Path( new File( CorePlugin.getDataLocation( this ), "content" ).getAbsolutePath() ) );
         
         DefaultToolkit.registerMarkdownRenderer( () -> new ContentImageRenderer() );
         DefaultToolkit.registerMarkdownRenderer( () -> new ArticleLinkRenderer() );

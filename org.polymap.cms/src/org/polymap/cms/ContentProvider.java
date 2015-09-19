@@ -32,8 +32,6 @@ import com.google.common.base.Function;
 
 import org.eclipse.core.runtime.IPath;
 
-import org.polymap.core.runtime.Polymap;
-
 /**
  * 
  *
@@ -52,13 +50,7 @@ public class ContentProvider {
     
     
     public static ContentProvider instance() {
-        if (instance == null) {
-            synchronized (ContentProvider.class) {
-                if (instance == null) {
-                    instance = new ContentProvider( Polymap.getWorkspacePath().append( "cms" ) );
-                }
-            }
-        }
+        assert instance != null;
         return instance;
     }
     
@@ -66,6 +58,7 @@ public class ContentProvider {
     // instance *******************************************
     
     private File                    rootDir;
+    
     
     public ContentProvider( IPath rootPath ) {
         rootDir = rootPath.toFile();
@@ -103,6 +96,15 @@ public class ContentProvider {
 
         public boolean exists() {
             return f.exists();    
+        }
+        
+        public void putContent( String content ) {
+            try {
+                FileUtils.write( f, content, "UTF8" );
+            }
+            catch (IOException e) {
+                throw new RuntimeException( e );
+            }    
         }
         
         public String content() {
@@ -143,6 +145,15 @@ public class ContentProvider {
         public String title() {
             return FilenameUtils.getBaseName( f.getName() );
         }
+                
+        /**
+         * The unique name that identifies this article. This is the base name of the
+         * file.
+         */
+        public String name() {
+            return FilenameUtils.getBaseName( f.getName() );
+        }
+        
     }
     
 }

@@ -26,8 +26,8 @@ import org.polymap.core.ui.UIUtils;
 
 import org.polymap.rhei.batik.BatikApplication;
 import org.polymap.rhei.batik.IAppContext;
-import org.polymap.rhei.batik.app.DefaultToolkit;
-import org.polymap.rhei.batik.internal.LinkActionServiceHandler;
+import org.polymap.rhei.batik.engine.linkaction.LinkActionServiceHandler;
+import org.polymap.rhei.batik.toolkit.DefaultToolkit;
 import org.polymap.rhei.batik.toolkit.ILinkAction;
 import org.polymap.rhei.batik.toolkit.IMarkdownNode;
 import org.polymap.rhei.batik.toolkit.IMarkdownRenderer;

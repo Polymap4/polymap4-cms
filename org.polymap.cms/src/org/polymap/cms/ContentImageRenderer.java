@@ -25,13 +25,13 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Widget;
 
-import org.polymap.rhei.batik.app.DefaultToolkit;
+import org.polymap.rhei.batik.toolkit.DefaultToolkit;
 import org.polymap.rhei.batik.toolkit.IMarkdownNode;
 import org.polymap.rhei.batik.toolkit.IMarkdownRenderer;
 import org.polymap.rhei.batik.toolkit.MarkdownRenderOutput;
 
 import org.polymap.cms.ContentProvider.ContentObject;
-import org.polymap.rap.updownload.download.DownloadServiceHandler;
+import org.polymap.rap.updownload.download.DownloadService;
 
 /**
  * Images and download.
@@ -43,7 +43,7 @@ public class ContentImageRenderer
 
     private static Log log = LogFactory.getLog( ContentImageRenderer.class );
     
-    private DownloadServiceHandler.ContentProvider provider;
+    private DownloadService.ContentProvider provider;
     
     
     @Override
@@ -64,7 +64,7 @@ public class ContentImageRenderer
 
             // download handler
             assert provider == null; 
-            provider = new DownloadServiceHandler.ContentProvider() {
+            provider = new DownloadService.ContentProvider() {
                 @Override
                 public InputStream getInputStream() throws Exception {
                     return co.contentStream();
@@ -86,7 +86,7 @@ public class ContentImageRenderer
             // prevent this from being GCed as long as the widget exists
             widget.addDisposeListener( this );
 
-            String url = DownloadServiceHandler.registerContent( provider );
+            String url = DownloadService.registerContent( provider );
             out.setUrl( url );
             out.setText( node.text() );
             return true;
@@ -96,7 +96,7 @@ public class ContentImageRenderer
     
     @Override
     public void widgetDisposed( DisposeEvent ev ) {
-        //DownloadServiceHandler.unregisterContent( provider );
+        //DownloadService.unregisterContent( provider );
     }    
 
 }
