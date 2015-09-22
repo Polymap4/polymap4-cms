@@ -14,6 +14,8 @@
  */
 package org.polymap.cms.webdav;
 
+import io.milton.http.FileItem;
+
 import java.util.Map;
 
 import java.io.ByteArrayInputStream;
@@ -22,8 +24,6 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.bradmcevoy.http.FileItem;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -58,9 +58,10 @@ public class CmsFolder
         log.info( "accepted: " + contentType );
         return "<div style=\"background:#f0f0f0; padding:5px; width:800px; margin-left:auto; margin-right:auto;\">" +
                 "<h2>Kleine Anleitung</h2>" + 
-                "<p>Das ist die Übersicht der <b>Dateien (\"Files\")</b> der Web-Seite. Jede Datei enthält den Text einer <b>Seite</b> im Web. Man könnte auch \"Artikel\" oder \"Beitrag\" dazu sagen. Es gibt auch noch andere Dateien, zum Beispiel für Bilder. Die Dateien mit den Texten enden auf *.txt.</p>" + 
-                "<p>Zum <b>Bearbeiten</b> klickst du auf einen Eintrag unten. Danach öffnet sich ein einfacher Editor. Darin kannst du den Text ändern und danach speichern.</p>" + 
-                "<p>Im <b>Unterverzeichnis (\"Folder\")</b> \"images\" liegen alle Bilder. Das Unterverzeichnis \"frontpage\" hat eine besondere Funktion. Alle darin gespeicherten Text-Dateien werden auf der ersten Seite als einzelne Absätze angezeigt.</p>" +
+                "<p>Das ist die Uebersicht der <b>Dateien (\"Files\")</b> der Web-Seite. Jede Datei enthaelt den Text einer <b>Seite</b> im Web. Man koennte auch \"Artikel\" oder \"Beitrag\" dazu sagen. Es gibt auch noch andere Dateien, zum Beispiel fuer Bilder. Die Dateien mit den Texten enden auf *.md.</p>" + 
+                "<p>Zum <b>Bearbeiten</b> klickst du auf einen Eintrag unten. Danach oeffnet sich ein einfacher Editor. Darin kannst du den Text aendern und danach speichern.</p>" + 
+                "<p>Zum <b>Anlegen</b> klickst ganz unten bei <b>File upload:</b> auf \"Durchsuchen...\". Eine Datei mit entsprechendem Namen muss also vorbereitet sein.</p>" + 
+                "<p>Im <b>Unterverzeichnis (\"Folder\")</b> \"images\" liegen alle Bilder. Das Unterverzeichnis \"frontpage\" hat eine besondere Funktion. Alle darin gespeicherten Text-Dateien werden auf der ersten Seite als einzelne Absaetze angezeigt.</p>" +
                 "</div>";
     }
 

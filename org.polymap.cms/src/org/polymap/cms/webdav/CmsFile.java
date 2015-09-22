@@ -50,7 +50,7 @@ public class CmsFile
 
     private static Log log = LogFactory.getLog( CmsFile.class );
 
-    public static final String[]        CONTENT_FILE_EXTENSIONS = {"txt", "TXT", "md", "MD"};
+    public static final String[]        CONTENT_FILE_EXTENSIONS = {"txt", "md"};
     
     
     public CmsFile( IPath parentPath, CmsContentProvider provider, File source ) {
@@ -69,7 +69,7 @@ public class CmsFile
             throws IOException, BadRequestException {
         log.info( "accepted: " + acceptedContentType );
         if (StringUtils.contains( acceptedContentType, "text/html")
-                && endsWithAny( getName(), CONTENT_FILE_EXTENSIONS )) {
+                && endsWithAny( getName().toLowerCase(), CONTENT_FILE_EXTENSIONS )) {
             sendHtmlForm( out );
         }
         else {

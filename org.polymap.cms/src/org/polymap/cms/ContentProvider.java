@@ -45,7 +45,7 @@ public class ContentProvider {
     
 
     public static void init( IPath rootPath ) {
-        instance = new ContentProvider( rootPath );    
+        instance = new ContentProvider( rootPath );
     }
     
     
@@ -66,6 +66,11 @@ public class ContentProvider {
     }
 
     
+    public File getRootDir() {
+        return rootDir;
+    }
+
+
     public <T extends ContentObject> T findContent( String path ) {
         File f = new File( rootDir, path );
         return (T)new ContentObject( f );

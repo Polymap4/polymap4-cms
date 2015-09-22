@@ -23,7 +23,7 @@ import org.polymap.rhei.batik.toolkit.DefaultToolkit;
 public class CmsPlugin 
         extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.polymap.cms"; //$NON-NLS-1$
+	public static final String     PLUGIN_ID = "org.polymap.cms";
 
 	private static CmsPlugin       instance;
 	
@@ -32,6 +32,7 @@ public class CmsPlugin
         return instance;
     }
 
+	
 	// instance *******************************************
 	
     public void start( BundleContext context ) throws Exception {

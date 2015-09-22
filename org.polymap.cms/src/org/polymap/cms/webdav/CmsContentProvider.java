@@ -1,6 +1,6 @@
 /* 
  * polymap.org
- * Copyright (C) 2014, Falko Bräutigam. All rights reserved.
+ * Copyright (C) 2014-2015, Falko Bräutigam. All rights reserved.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -26,15 +26,14 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import org.polymap.core.runtime.Polymap;
-import org.polymap.core.security.SecurityUtils;
-
 import org.polymap.service.fs.providers.file.FsContentProvider;
 import org.polymap.service.fs.providers.file.FsFolder;
 import org.polymap.service.fs.spi.IContentFolder;
 import org.polymap.service.fs.spi.IContentNode;
 import org.polymap.service.fs.spi.IContentProvider;
 import org.polymap.service.fs.spi.IContentSite;
+
+import org.polymap.cms.ContentProvider;
 
 /**
  * 
@@ -56,7 +55,7 @@ public class CmsContentProvider
     public void init( IContentSite site ) {
         super.init( site );
         
-        File dir = new File( Polymap.getWorkspacePath().toFile(), "cms" );
+        File dir = ContentProvider.instance().getRootDir();
         FsFolder root = new CmsFolder( "CMS", new Path( "/" ), this, dir );
         roots = Collections.singletonList( root );
     }
@@ -65,9 +64,9 @@ public class CmsContentProvider
     @Override
     public List<? extends IContentNode> getChildren( IPath path ) {
         // check admin
-        if (!SecurityUtils.isAdmin()) {
-            return null;
-        }
+//        if (!SecurityUtils.isAdmin()) {
+//            return null;
+//        }
         
         // roots
         if (path.segmentCount() == 0) {
