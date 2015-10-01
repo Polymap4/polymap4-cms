@@ -1,6 +1,6 @@
 /* 
  * polymap.org
- * Copyright (C) 2014, Falko Bräutigam. All rights reserved.
+ * Copyright (C) 2014-2015, Falko Bräutigam. All rights reserved.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -14,8 +14,16 @@
  */
 package org.polymap.cms;
 
-import static com.google.common.collect.Iterables.transform;
-import static java.util.Arrays.asList;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -28,18 +36,24 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.common.base.Function;
-
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.rap.rwt.RWT;
+
+import org.polymap.core.runtime.config.Config;
+import org.polymap.core.runtime.config.Configurable;
+import org.polymap.core.runtime.config.Mandatory;
 
 /**
  * 
  *
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
-public class ContentProvider {
+public class ContentProvider
+        extends Configurable {
 
     private static Log log = LogFactory.getLog( ContentProvider.class );
+    
+    private static final String     LANG_SEPARATOR = "_";
     
     private static ContentProvider  instance;
     
@@ -59,10 +73,17 @@ public class ContentProvider {
     
     private File                    rootDir;
     
+    /** 
+     * The default {@link Locale} used as fall-back. Defaults to {@link Locale#getDefault()}. 
+     */
+    @Mandatory
+    public Config<Locale>           defaultLocale;
+    
     
     public ContentProvider( IPath rootPath ) {
         rootDir = rootPath.toFile();
         rootDir.mkdirs();
+        defaultLocale.set( Locale.getDefault() );
     }
 
     
@@ -71,32 +92,110 @@ public class ContentProvider {
     }
 
 
+    /**
+     * Finds the object for the given path. Uses the Locale of the current
+     * {@link RWT#getLocale() RWT session} and falls back to {@link #defaultLocale}.
+     *
+     * @param path The relative path of the object.
+     * @return Newly created {@link ContentObject}. Check {@link ContentObject#exists()}.
+     */
     public <T extends ContentObject> T findContent( String path ) {
-        File f = new File( rootDir, path );
-        return (T)new ContentObject( f );
+        return findContent( path, RWT.getLocale(), false );
     }
     
 
-    public <T extends ContentObject> Iterable<T> listContent( String path ) {
+    /**
+     * 
+     *
+     * @param path The relative path of the object.
+     * @param locale The Locale to search content for. Must not be null.
+     * @param strict True specifies that {@link #defaultLocale} is not consulted.
+     * @return Newly created {@link ContentObject}. Check {@link ContentObject#exists()}.
+     */
+    public <T extends ContentObject> T findContent( String path, Locale locale, boolean strict ) {
+        File f = new File( rootDir, path );
+        return (T)new ContentObject( f, locale, strict );
+    }
+    
+
+    /**
+     * Returns a list of objects that have content for the Locale of the current
+     * {@link RWT#getLocale() RWT session} and falls back to {@link #defaultLocale}.
+     *
+     * @param path The relative path of the folder.
+     */
+    public <T extends ContentObject> List<T> listContent( String path ) {
+        return listContent( path, RWT.getLocale(), false );
+    }
+
+    /**
+     * 
+     *
+     * @param path The relative path of the folder.
+     * @param locale The Locale to search content for. Must not be null.
+     * @param strict True specifies that {@link #defaultLocale} is not consulted.
+     */
+    public <T extends ContentObject> List<T> listContent( String path, Locale locale, boolean strict ) {
         File dir = new File( rootDir, path );
-        return transform( asList( dir.listFiles() ), new Function<File,T>() {
-            public T apply( File input ) {
-                return (T)new ContentObject( input );
-            }
-        });
+        
+        // files that have at least one lang content
+        Set<File> files = Arrays.stream( dir.listFiles() )
+                .map( f -> withoutLocale( f ).getAbsoluteFile() )
+                .collect( Collectors.toCollection( TreeSet::new ) );
+        
+        //
+        return files.stream()
+                .map( f -> (T)new ContentObject( f, locale, strict ) )
+                .filter( co -> co.exists() )  // if strict
+                .collect( Collectors.toList() );
+    }
+    
+    
+    protected File withLocale( File f, Locale l ) {
+        String lang = l.getLanguage().toLowerCase();
+        return new File( f.getParentFile(), 
+                getBaseName( f.getName() ) + "_" + lang + "." + getExtension( f.getName() ) );
+    }
+    
+
+    protected File withoutLocale( File f ) {
+        return f.getName().contains( LANG_SEPARATOR )
+            ? new File( f.getParentFile(), substringBeforeLast( f.getName(), LANG_SEPARATOR ) + "." + getExtension( f.getName() ) )
+            : f;
     }
     
 
     /**
      * API and base class of content object, such as text or image. 
      */
-    public static class ContentObject {
+    public class ContentObject {
+    
+        private Locale          locale;
         
         private File            f;
         
-        public ContentObject( File f ) {
-            assert f != null;
-            this.f = f;
+        /** The name of {@link #f} without locale extension. */
+        private String          name;
+        
+        
+        public ContentObject( File f, Locale locale, boolean strict ) {
+            assert f != null && locale != null;
+            
+            // negotiate locale
+            this.name = f.getName();
+            File requested = new File( f.getAbsolutePath() );
+            
+            this.f = withLocale( f, locale );
+            this.locale = locale;
+            
+            if (!this.f.exists() && !strict) {
+                this.f = requested;
+                this.locale = defaultLocale.get();
+            }
+        }
+        
+        public Locale locale() {
+            return locale;
         }
 
         public boolean exists() {
@@ -148,7 +247,7 @@ public class ContentProvider {
         }
         
         public String title() {
-            return FilenameUtils.getBaseName( f.getName() );
+            return FilenameUtils.getBaseName( name );
         }
                 
         /**
@@ -156,7 +255,7 @@ public class ContentProvider {
          * file.
          */
         public String name() {
-            return FilenameUtils.getBaseName( f.getName() );
+            return FilenameUtils.getBaseName( name );
         }
         
     }

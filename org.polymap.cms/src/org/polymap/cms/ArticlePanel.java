@@ -18,17 +18,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.ui.FormDataFactory;
+import org.polymap.core.ui.FormLayoutFactory;
 import org.polymap.core.ui.UIUtils;
 
 import org.polymap.rhei.batik.DefaultPanel;
 import org.polymap.rhei.batik.PanelIdentifier;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
-import org.polymap.rhei.batik.toolkit.MinWidthConstraint;
-import org.polymap.rhei.batik.toolkit.PriorityConstraint;
 
 import org.polymap.cms.ContentProvider.ContentObject;
 
@@ -69,11 +68,15 @@ public class ArticlePanel
                       title = StringUtils.substringBefore( content, "\n" ).substring( 1 );
                       content = content.substring( title.length() + 2 );
                 }
+
+                log.info( "parent width: " + parent.getBounds().width );
+                
                 
                 IPanelSection section = tk.createPanelSection( parent, title );
-                section.addConstraint( new PriorityConstraint( 10 ), new MinWidthConstraint( 350, 0 ) );
-                section.getBody().setLayout( new FillLayout() );
-                tk.createFlowText( section.getBody(), content );
+                section.getBody().setLayout( FormLayoutFactory.defaults().create() );
+                
+                tk.createFlowText( section.getBody(), content )
+                        .setLayoutData( FormDataFactory.filled().width( 500 ).create() );
                 
                 getSite().setTitle( title );
             }

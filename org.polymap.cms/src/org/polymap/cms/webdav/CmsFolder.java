@@ -69,9 +69,18 @@ public class CmsFolder
     @Override
     public String processForm( Map<String,String> params, Map<String,FileItem> files ) 
             throws IOException, NotAuthorizedException, BadRequestException {
+        // params set if edited (CmsFileEditor.html)
         String filename = params.get( "filename" );
         String text = params.get( "edited" );
-        getProvider().createNew( this, filename, new ByteArrayInputStream( text.getBytes( "UTF-8" ) ) );
+        if (filename != null) {
+            getProvider().createNew( this, filename, new ByteArrayInputStream( text.getBytes( "UTF-8" ) ) );
+        }
+        // uploaded via upload
+        else {
+            for (FileItem f : files.values()) {
+                getProvider().createNew( this, f.getName(), f.getInputStream() );
+            };
+        }
         return null;
     }
 
