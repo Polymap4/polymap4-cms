@@ -16,7 +16,9 @@ package org.polymap.cms.webdav;
 
 import static org.apache.commons.lang3.StringUtils.endsWithAny;
 import static org.apache.commons.lang3.StringUtils.replace;
+import static org.apache.commons.lang3.StringUtils.startsWith;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import java.io.ByteArrayInputStream;
@@ -28,15 +30,18 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.eclipse.core.runtime.IPath;
 
+import org.polymap.core.runtime.Lazy;
+import org.polymap.core.runtime.PlainLazyInit;
+
 import org.polymap.service.fs.providers.file.FsFile;
 import org.polymap.service.fs.spi.BadRequestException;
 import org.polymap.service.fs.spi.Range;
+import org.polymap.service.fs.webdav.WebDavServer;
 
 import org.polymap.cms.CmsPlugin;
 
@@ -50,7 +55,11 @@ public class CmsFile
 
     private static Log log = LogFactory.getLog( CmsFile.class );
 
-    public static final String[]        CONTENT_FILE_EXTENSIONS = {"txt", "md"};
+    public static final String[]        ARTICLE_EXTENSIONS = {"txt", "md"};
+
+    public static final String[]        BROWSER_AGENTS = {"Mozilla","Safari", "Chrome" };
+    
+    protected Lazy<Boolean>             isArticle = new PlainLazyInit( () -> endsWithAny( getName().toLowerCase(), ARTICLE_EXTENSIONS ) ); 
     
     
     public CmsFile( IPath parentPath, CmsContentProvider provider, File source ) {
@@ -68,8 +77,12 @@ public class CmsFile
     public void sendContent( OutputStream out, Range range, Map<String,String> params, String acceptedContentType )
             throws IOException, BadRequestException {
         log.info( "accepted: " + acceptedContentType );
-        if (StringUtils.contains( acceptedContentType, "text/html")
-                && endsWithAny( getName().toLowerCase(), CONTENT_FILE_EXTENSIONS )) {
+        
+        String userAgent = WebDavServer.request().getHeaders().getOrDefault( "User-Agent", "" );
+        log.info( "user-agent: " + userAgent );
+        boolean isBrowser = Arrays.stream( BROWSER_AGENTS ).filter( ba -> userAgent.contains( ba ) ).findAny().isPresent();
+        
+        if (isArticle.get() && (acceptedContentType.contains( "text/html" ) || isBrowser)) {
             sendHtmlForm( out );
         }
         else {
@@ -80,17 +93,18 @@ public class CmsFile
 
     @Override
     public String getContentType( String accepts ) {
-        // support HTML for in-browser editing
-        if (StringUtils.startsWith( accepts, "text/html" )
-                && endsWithAny( getName(), CONTENT_FILE_EXTENSIONS )) {
-            return "text/html; charset=utf-8";
+        if (isArticle.get()) {
+            // support HTML for in-browser editing (see sendContent())
+            return startsWith( accepts, "text/html" )
+                    ? "text/html; charset=utf-8"
+                    : "text/plain; charset=utf-8";
         }
         else {
             return super.getContentType( accepts );
         }
     }
 
-
+    
     protected void sendHtmlForm( OutputStream out ) {
         URL templateUrl = CmsPlugin.instance().getBundle().getResource( "resources/html/CmsFileEditor.html" );
         InputStream in = null;
