@@ -76,7 +76,7 @@ public class CmsContentProvider
         // folder
         IContentFolder parent = getSite().getFolder( path );
         if (parent instanceof FsFolder) {
-            File[] files = ((CmsFolder)parent).getDir().listFiles();
+            File[] files = ((FsFolder)parent).getDir().listFiles();
             List<IContentNode> result = new ArrayList( files.length );
             
             for (File f : files) {
