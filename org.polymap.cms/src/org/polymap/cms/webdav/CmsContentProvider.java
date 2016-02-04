@@ -86,7 +86,6 @@ public class CmsContentProvider
                 else if (f.isDirectory()) {
                     result.add( new CmsFolder( f.getName(), parent.getPath(), this, f ) );                    
                 }
-            
             }
             return result;
         }
