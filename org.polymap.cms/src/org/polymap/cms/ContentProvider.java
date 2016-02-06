@@ -226,10 +226,7 @@ public class ContentProvider
         
         public String contentType() {
             String ext = FilenameUtils.getExtension( f.getName() );
-            if (ext.equalsIgnoreCase( "txt" )) {
-                return "text/text; charset=UTF8";
-            }
-            else if (ext.equalsIgnoreCase( "jpg" ) || ext.equalsIgnoreCase( "jpeg" )) {
+            if (ext.equalsIgnoreCase( "jpg" ) || ext.equalsIgnoreCase( "jpeg" )) {
                 return "image/jpeg";
             }
             else if (ext.equalsIgnoreCase( "png" )) {
@@ -242,7 +239,7 @@ public class ContentProvider
                 return "application/pdf";
             }
             else {
-                return "text/text; charset=UTF8";
+                return "text/plain; charset=UTF8";
             }
         }
         
