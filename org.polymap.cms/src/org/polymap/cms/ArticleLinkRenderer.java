@@ -67,8 +67,8 @@ public class ArticleLinkRenderer
                 @Override
                 public void linkPressed() throws Exception {
                     IAppContext context = BatikApplication.instance().getContext();
-                    ArticlePanel panel = (ArticlePanel)context.openPanel( toolkit.getPanelPath(), ArticlePanel.ID );
-                    panel.setArticle( node.url().substring( 1 ) ); 
+                    context.openPanel( toolkit.getPanelPath(), ArticlePanel.ID )
+                            .ifPresent( panel -> ((ArticlePanel)panel).setArticle( node.url().substring( 1 ) ) ); 
                 }
             };
 

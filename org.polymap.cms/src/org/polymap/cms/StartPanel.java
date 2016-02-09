@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.rhei.batik.DefaultPanel;
-import org.polymap.rhei.batik.IPanel;
 import org.polymap.rhei.batik.PanelIdentifier;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
@@ -31,8 +30,7 @@ import org.polymap.rhei.batik.toolkit.IPanelToolkit;
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
 public class StartPanel
-        extends DefaultPanel
-        implements IPanel {
+        extends DefaultPanel {
 
     private static Log log = LogFactory.getLog( StartPanel.class );
 
