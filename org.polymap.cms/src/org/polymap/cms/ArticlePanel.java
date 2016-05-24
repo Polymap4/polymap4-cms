@@ -18,17 +18,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.polymap.core.runtime.UIThreadExecutor;
 import org.polymap.core.ui.FormDataFactory;
 import org.polymap.core.ui.FormLayoutFactory;
-import org.polymap.core.ui.UIUtils;
 
 import org.polymap.rhei.batik.DefaultPanel;
 import org.polymap.rhei.batik.PanelIdentifier;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
-
 import org.polymap.cms.ContentProvider.ContentObject;
 
 /**
@@ -53,33 +53,36 @@ public class ArticlePanel
 
     @Override
     public void createContents( final Composite parent ) {
-        // delay after ArticleLinkRenderer has called setArticle
-        UIUtils.sessionDisplay().asyncExec( new Runnable() {
-            public void run() {
-                IPanelToolkit tk = getSite().toolkit();
-                ContentProvider cp = ContentProvider.instance();
-                
-                ContentObject co = cp.findContent( articlePath );
-                getSite().setTitle( co.title() );
-                
-                String content = co.content();
-                String title = null;
-                if (content.startsWith( "#" )) {
-                      title = StringUtils.substringBefore( content, "\n" ).substring( 1 );
-                      content = content.substring( title.length() + 2 );
-                }
+        site().preferredWidth.set( 550 );
+        parent.setLayout( new FillLayout() );
 
-                log.info( "parent width: " + parent.getBounds().width );
-                
-                
-                IPanelSection section = tk.createPanelSection( parent, title );
-                section.getBody().setLayout( FormLayoutFactory.defaults().create() );
-                
-                tk.createFlowText( section.getBody(), content )
-                        .setLayoutData( FormDataFactory.filled().width( 500 ).create() );
-                
-                getSite().setTitle( title );
+        IPanelToolkit tk = site().toolkit();
+        IPanelSection section = tk.createPanelSection( parent, "..." );
+        section.getBody().setLayout( FormLayoutFactory.defaults().create() );
+        
+        // delay after ArticleLinkRenderer has called setArticle
+        UIThreadExecutor.async( () -> {
+            ContentProvider cp = ContentProvider.instance();
+
+            ContentObject co = cp.findContent( articlePath );
+            getSite().setTitle( co.title() );
+
+            String content = co.content();
+            String title = null;
+            if (content.startsWith( "#" )) {
+                title = StringUtils.substringBefore( content, "\n" ).substring( 1 );
+                content = content.substring( title.length() + 2 );
             }
+
+            log.info( "parent width: " + parent.getBounds().width );
+
+            section.setTitle( title );
+            site().title.set( title );
+            
+            tk.createFlowText( section.getBody(), content )
+                    .setLayoutData( FormDataFactory.filled().width( 500 ).create() );
+            section.getBody().layout();
+            //site().layout( true );
         });
     }
     
