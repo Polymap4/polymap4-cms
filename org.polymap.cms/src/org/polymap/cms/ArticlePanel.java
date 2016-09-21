@@ -18,17 +18,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import org.polymap.core.runtime.UIThreadExecutor;
 import org.polymap.core.ui.FormDataFactory;
 import org.polymap.core.ui.FormLayoutFactory;
-
 import org.polymap.rhei.batik.DefaultPanel;
 import org.polymap.rhei.batik.PanelIdentifier;
 import org.polymap.rhei.batik.toolkit.IPanelSection;
 import org.polymap.rhei.batik.toolkit.IPanelToolkit;
+
 import org.polymap.cms.ContentProvider.ContentObject;
 
 /**
@@ -44,6 +45,10 @@ public class ArticlePanel
     public static final PanelIdentifier ID = new PanelIdentifier( "article" );
 
     private String          articlePath;
+
+    private IPanelToolkit   tk;
+
+    private IPanelSection   section;
     
     
     public void setArticle( String path ) {
@@ -51,14 +56,46 @@ public class ArticlePanel
     }
 
 
+    /**
+     * Creates the basic layout of the article panel.
+     * <p/>
+     * Override this in order to provide specific layout. 
+     */
+    protected void createLayout( Composite parent ) {
+        site().setSize( 550, 550, Integer.MAX_VALUE );
+
+//        parent.setBackground( UIUtils.getColor( 250, 248, 248 ) );
+
+        FillLayout fill = new FillLayout( SWT.VERTICAL );
+        fill.marginHeight = 10; //site().layoutPreferences().getMarginTop();
+        fill.marginWidth = site().layoutPreferences().getMarginLeft();
+        parent.setLayout( fill );
+        
+        tk = site().toolkit();
+        section = tk.createPanelSection( parent, "...", SWT.BORDER );
+        section.getBody().setLayout( FormLayoutFactory.defaults().margins( 10, 0 ).create() );        
+    }
+    
+    
+    /**
+     * Creates the text control.
+     * <p/>
+     * Override this in order to provide specific behaviour. 
+     */
+    protected void createText( String title, String content ) {
+        section.setTitle( title );
+        site().title.set( title );
+        
+        tk.createFlowText( section.getBody(), content )
+                .setLayoutData( FormDataFactory.filled().width( 500 ).create() );
+        section.getBody().layout();
+        //site().layout( true );        
+    }
+    
+    
     @Override
     public void createContents( final Composite parent ) {
-        site().setSize( 550, 550, Integer.MAX_VALUE );
-        parent.setLayout( new FillLayout() );
-
-        IPanelToolkit tk = site().toolkit();
-        IPanelSection section = tk.createPanelSection( parent, "..." );
-        section.getBody().setLayout( FormLayoutFactory.defaults().create() );
+        createLayout( parent );
         
         // delay after ArticleLinkRenderer has called setArticle
         UIThreadExecutor.async( () -> {
@@ -74,15 +111,7 @@ public class ArticlePanel
                 content = content.substring( title.length() + 2 );
             }
 
-            log.info( "parent width: " + parent.getBounds().width );
-
-            section.setTitle( title );
-            site().title.set( title );
-            
-            tk.createFlowText( section.getBody(), content )
-                    .setLayoutData( FormDataFactory.filled().width( 500 ).create() );
-            section.getBody().layout();
-            //site().layout( true );
+            createText( title, content );
         });
     }
     
