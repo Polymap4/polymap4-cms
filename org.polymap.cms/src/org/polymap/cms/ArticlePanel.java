@@ -53,7 +53,7 @@ public class ArticlePanel
 
     @Override
     public void createContents( final Composite parent ) {
-        site().preferredWidth.set( 550 );
+        site().setSize( 550, 550, Integer.MAX_VALUE );
         parent.setLayout( new FillLayout() );
 
         IPanelToolkit tk = site().toolkit();
