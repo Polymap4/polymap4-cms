@@ -62,7 +62,7 @@ public class ArticlePanel
      * Override this in order to provide specific layout. 
      */
     protected void createLayout( Composite parent ) {
-        site().setSize( 550, 550, Integer.MAX_VALUE );
+        site().setSize( 550, 650, 700 );
 
 //        parent.setBackground( UIUtils.getColor( 250, 248, 248 ) );
 
