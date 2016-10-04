@@ -98,7 +98,7 @@ public class ArticlePanel
             protected void runWithException( IProgressMonitor monitor ) throws Exception {
                 UIThreadExecutor.async( () -> {
                     log.info( "..." );
-                    flowText.setLayoutData( FormDataFactory.filled().width( 1000 ).height( 1000 ).create() );
+                    flowText.setLayoutData( FormDataFactory.filled().width( 1000 ).height( 2000 ).create() );
                     site().layout( true );
                 });
             }
