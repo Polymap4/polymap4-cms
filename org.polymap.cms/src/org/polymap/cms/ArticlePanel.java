@@ -21,7 +21,11 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import org.polymap.core.runtime.UIJob;
 import org.polymap.core.runtime.UIThreadExecutor;
 import org.polymap.core.ui.FormDataFactory;
 import org.polymap.core.ui.FormLayoutFactory;
@@ -64,8 +68,6 @@ public class ArticlePanel
     protected void createLayout( Composite parent ) {
         site().setSize( 550, 650, 700 );
 
-//        parent.setBackground( UIUtils.getColor( 250, 248, 248 ) );
-
         FillLayout fill = new FillLayout( SWT.VERTICAL );
         fill.marginHeight = 10; //site().layoutPreferences().getMarginTop();
         fill.marginWidth = site().layoutPreferences().getMarginLeft();
@@ -86,10 +88,21 @@ public class ArticlePanel
         section.setTitle( title );
         site().title.set( title );
         
-        tk.createFlowText( section.getBody(), content )
-                .setLayoutData( FormDataFactory.filled().width( 500 ).create() );
+        Label flowText = tk.createFlowText( section.getBody(), content );
+        flowText.setLayoutData( FormDataFactory.filled().width( 500 ).height( 500 ).create() );
         section.getBody().layout();
-        //site().layout( true );        
+        
+        // XXX delayed refresh: trying to help RAP to get the font/text size right (?)
+        new UIJob( "delay", true ) {
+            @Override
+            protected void runWithException( IProgressMonitor monitor ) throws Exception {
+                UIThreadExecutor.async( () -> {
+                    log.info( "..." );
+                    flowText.setLayoutData( FormDataFactory.filled().width( 1000 ).height( 1000 ).create() );
+                    site().layout( true );
+                });
+            }
+        }.scheduleWithUIUpdate( 1000 );
     }
     
     
