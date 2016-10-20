@@ -37,7 +37,12 @@ import org.polymap.rhei.batik.toolkit.IPanelToolkit;
 import org.polymap.cms.ContentProvider.ContentObject;
 
 /**
- * 
+ * <p/>
+ * <b>Example: open with article</b>
+ * <pre>
+ * getContext().openPanel( site().path(), ArticlePanel.ID )
+ *         .ifPresent( panel -> ((ArticlePanel)panel).setArticle( "..." ) ); 
+ * </pre>
  *
  * @author <a href="http://www.polymap.de">Falko Bräutigam</a>
  */
