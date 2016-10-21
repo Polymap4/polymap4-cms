@@ -45,14 +45,14 @@ import org.polymap.rhei.batik.toolkit.MarkdownRenderOutput;
 public class ArticleLinkRenderer
         implements IMarkdownRenderer, DisposeListener {
 
-    private static Log log = LogFactory.getLog( ArticleLinkRenderer.class );
+    private static final Log log = LogFactory.getLog( ArticleLinkRenderer.class );
     
     private ILinkAction                 action;
 
     
     @Override
     public boolean render( DefaultToolkit toolkit, IMarkdownNode node, MarkdownRenderOutput out, Widget widget ) {
-        log.info( "url=" + node.url() );
+        log.debug( "url=" + node.url() );
         if (node.type() == IMarkdownNode.Type.ExpLink && node.url().startsWith( "!" )) {
 
             assert action == null;

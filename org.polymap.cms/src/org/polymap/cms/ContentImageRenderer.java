@@ -41,7 +41,7 @@ import org.polymap.rap.updownload.download.DownloadService;
 public class ContentImageRenderer
         implements IMarkdownRenderer, DisposeListener {
 
-    private static Log log = LogFactory.getLog( ContentImageRenderer.class );
+    private static final Log log = LogFactory.getLog( ContentImageRenderer.class );
     
     private DownloadService.ContentProvider provider;
     
@@ -50,7 +50,7 @@ public class ContentImageRenderer
     public boolean render( DefaultToolkit toolkit, IMarkdownNode node, MarkdownRenderOutput out, Widget widget ) {
         if (node.type() == IMarkdownNode.Type.ExpImage
                 || node.type() == IMarkdownNode.Type.ExpLink && node.url().startsWith( "#" )) {
-            log.info( "url=" + node.url() + ", text=" + node.text() );
+            log.debug( "url=" + node.url() + ", text=" + node.text() );
 
             String nodeUrl = node.url().startsWith( "#" ) 
                     ? substringAfter( node.url(), "#" )
