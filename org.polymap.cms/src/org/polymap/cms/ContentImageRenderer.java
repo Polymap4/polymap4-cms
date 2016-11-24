@@ -89,6 +89,7 @@ public class ContentImageRenderer
             String url = DownloadService.registerContent( provider );
             out.setUrl( url );
             out.setText( node.text() );
+            out.setId( node.text() );
             return true;
         }
         return false;
