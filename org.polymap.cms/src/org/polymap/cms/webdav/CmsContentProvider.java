@@ -20,9 +20,6 @@ import java.util.List;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
@@ -44,13 +41,6 @@ public class CmsContentProvider
         extends FsContentProvider
         implements IContentProvider {
 
-    private static Log log = LogFactory.getLog( CmsContentProvider.class );
-    
-
-    public CmsContentProvider() {
-    }
-
-    
     @Override
     public void init( IContentSite site ) {
         super.init( site );

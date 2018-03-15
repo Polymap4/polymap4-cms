@@ -57,7 +57,7 @@ public class CmsFile
 
     public static final String[]        ARTICLE_EXTENSIONS = {"txt", "md"};
 
-    public static final String[]        BROWSER_AGENTS = {"Mozilla","Safari", "Chrome" };
+    public static final String[]        BROWSER_AGENTS = {"Mozilla", "Safari", "Chrome" };
     
     protected Lazy<Boolean>             isArticle = new PlainLazyInit( () -> endsWithAny( getName().toLowerCase(), ARTICLE_EXTENSIONS ) ); 
     
@@ -73,16 +73,24 @@ public class CmsFile
     }
 
 
+    protected boolean isBrowserAgent() {
+        String userAgent = WebDavServer.request().getHeaders().getOrDefault( "User-Agent", "" );
+        log.info( "user-agent: " + userAgent );
+        return Arrays.stream( BROWSER_AGENTS ).filter( ba -> userAgent.contains( ba ) ).findAny().isPresent();
+
+    }
+    @Override
+    public Long getContentLength() {
+        return isBrowserAgent() && isArticle.get() ? -1l : super.getContentLength();
+    }
+
+
     @Override
     public void sendContent( OutputStream out, Range range, Map<String,String> params, String acceptedContentType )
             throws IOException, BadRequestException {
         log.info( "accepted: " + acceptedContentType );
         
-        String userAgent = WebDavServer.request().getHeaders().getOrDefault( "User-Agent", "" );
-        log.info( "user-agent: " + userAgent );
-        boolean isBrowser = Arrays.stream( BROWSER_AGENTS ).filter( ba -> userAgent.contains( ba ) ).findAny().isPresent();
-        
-        if (isArticle.get() && (acceptedContentType.contains( "text/html" ) || isBrowser)) {
+        if (isArticle.get() && (acceptedContentType.contains( "text/html" ) || isBrowserAgent())) {
             sendHtmlForm( out );
         }
         else {
