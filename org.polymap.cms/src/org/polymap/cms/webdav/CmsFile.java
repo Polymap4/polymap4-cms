@@ -122,6 +122,7 @@ public class CmsFile
             
             String html = replace( template, "@filename", getName() );
             html = replace( html, "@filecontent", FileUtils.readFileToString( getFile(), "UTF-8" ) );
+            html = replace( html, "@formaction", "." + requestParams() );
             
             IOUtils.copy( new ByteArrayInputStream( html.getBytes( "UTF-8" ) ), out );
         }

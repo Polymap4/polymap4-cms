@@ -3,7 +3,8 @@
   Parameter:
   ---------------------------------
   (at)filename - ...
-  (at)filecontent - ... 
+  (at)filecontent - ...
+  (at)formaction - ...
   -->
 <html>
 <head>
@@ -21,14 +22,14 @@ td, th { padding: 8px; }
     <em>Viel Spass beim Bearbeiten dieser Seite! Fehler passieren,
     es ist nur Software und alles wird gut! :)</em>
     
-    <form action="." enctype="multipart/form-data" method="post" accept-charset="ISO-8859-1">
+    <form action="@formaction" enctype="multipart/form-data" method="post" accept-charset="ISO-8859-1">
         <p>
             <!-- Welche HTML-Elemente fallen Ihnen ein, und was bewirken sie:<br-->
             <textarea name="edited" cols="90" rows="25">@filecontent</textarea>
             <input name="filename" type="hidden" value="@filename">
         </p>
         <input type="submit" value="Speichern">
-        - <small>(Zum Abbrechen im Browser <i>"eine Seite zurück"</i> benutzen)</small>
+        - <small>(Zum <b>Abbrechen</b> im Browser die Funktion <i>"Eine Seite zurück"</i> benutzen)</small>
     </form>
     
     <h2>Hilfe zur Formatierung</h2>
